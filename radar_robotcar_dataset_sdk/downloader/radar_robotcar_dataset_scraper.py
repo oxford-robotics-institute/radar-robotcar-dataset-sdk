@@ -29,6 +29,7 @@ class DatasetScraper:
         base_url = base_url if base_url is not None else FLAGS.dataset_url
         self.base_url = requests.get(base_url).url  # resolve redirects
         self.datesets_url = f"{self.base_url}/datasets"
+        self.downloads_url = f"{self.base_url}/downloads"
 
     def get_dataset_list(self):
         response = requests.get(self.datesets_url)
@@ -59,15 +60,34 @@ class DatasetScraper:
 
         return dataset_info
 
+    def get_sample_dataset_list(self):
+        response = requests.get(self.downloads_url)
+        soup = BeautifulSoup(response.text, "html.parser")
+        sample_datasets_div = soup.find("div", {"id": "sample_datasets"})
+        sample_datasets_elements = sample_datasets_div.find_all('li')
+        sample_datasets = dict()
+        for sample_datasets_element in sample_datasets_elements:
+            name = sample_datasets_element.next.split('(')[0].split(' ')[0].strip()
+            link = sample_datasets_element.find('a')['href']
+            size = sample_datasets_element.next.split('(')[1].split(')')[0]
+            sample_datasets[name] = {'Size': size, 'Download': link}
+        return sample_datasets
+
 
 def main(unused_args):
     dataset_scraper = DatasetScraper()
+    print("\nIndividual Dataset Downloads")
     dataset_list = dataset_scraper.get_dataset_list()
     for dataset in dataset_list:
         print(dataset)
         dataset_info = dataset_scraper.get_dataset_info(dataset_list[0])
         for sensor, info in dataset_info.items():
             print(f"  {sensor} - {info}")
+
+    print("\nSample Dataset Downloads")
+    sample_datasets = dataset_scraper.get_sample_dataset_list()
+    for sample_dataset_name, sample_dataset_link in sample_datasets.items():
+        print(f"  {sample_dataset_name} - {sample_dataset_link}")
 
 
 if __name__ == '__main__':
