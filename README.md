@@ -40,12 +40,18 @@ python -m radar_robotcar_dataset_sdk.downloader.download --help
 # Which will print
 #  --datasets: Comma separated list of datasets to download (None is all)
 #  --download_folder: Download folder (otherwise just list matching downloads)
+#  --sample_dataset: Sample dataset to download (one of `Tiny|Small|Medium|Large`).
+#    If provided --datasets and --sensors are ignored.
 #  --sensors: Comma separated list of sensors to download (None is all)
 #  --[no]verbose: Verbosely print sensor information
-#    (default: 'False')
+#    (default: 'false')
 
-# List, but dont download, all datasets and sensor downloads (no arguments)
+# List, but dont download, all sample datasets, datasets and sensor downloads (no arguments)
 python -m radar_robotcar_dataset_sdk.downloader.download
+
+# Download the `Small` sample dataset
+python -m radar_robotcar_dataset_sdk.downloader.download --sample_dataset Small \
+	--download_folder /tmp/oxford-radar-robotcar-dataset
 
 # Download Radar and GPS/INS Data from two Datasets
 python -m radar_robotcar_dataset_sdk.downloader.download \
