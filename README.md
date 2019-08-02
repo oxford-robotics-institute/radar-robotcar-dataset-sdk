@@ -16,9 +16,9 @@ All modules are contained in the base module `radar_robotcar_dataset_sdk`
 
 Obtaining Data
 --------------
-To obtain the data, please first register on the [dataset website website](http://ori.ox.ac.uk/datasets/radar-robotcar-dataset) to enable downloads for your Google account. Data can be downloaded manually via the website or using the script in this repository. 
+To obtain the data, please first register on the [dataset website](http://ori.ox.ac.uk/datasets/radar-robotcar-dataset) to enable downloads for your Google account. Data can be downloaded manually via the website or using the script in this repository. 
 
-Downloads are and separated into individual zip files for each sensor, for each traversal. It is recommended that you extract all tar files to the same directory - this will leave all the data in a sensible heirarchical directory structure. 
+Downloads are separated into individual zip files for each sensor, for each traversal. It is recommended that you extract all tar files to the same directory - this will leave all the data in a sensible heirarchical directory structure. 
 
 
 Installation 
@@ -34,7 +34,7 @@ Data Download
 The example code below assumes you have installed this repo as a package as described above
 
 ```bash
-# Downlaoder help
+# Downloader help
 python -m radar_robotcar_dataset_sdk.downloader.download --help
 
 # Which will print
@@ -42,18 +42,18 @@ python -m radar_robotcar_dataset_sdk.downloader.download --help
 #  --download_folder: Download folder (otherwise just list matching downloads)
 #  --sensors: Comma separated list of sensors to download (None is all)
 #  --[no]verbose: Verbosely print sensor information
-#    (default: 'false')
+#    (default: 'False')
 
 # List, but dont download, all datasets and sensor downloads (no arguments)
 python -m radar_robotcar_dataset_sdk.downloader.download
 
-# Download Radar and GPS/INS Data from Two Datasets
+# Download Radar and GPS/INS Data from two Datasets
 python -m radar_robotcar_dataset_sdk.downloader.download \
 	--datasets="2019-01-16-11-53-11-radar-oxford-10k,2019-01-16-13-09-37-radar-oxford-10k" \
 	--sensors="Navtech CTS350x Radar,NovAtel GPS / INS" \
 	--download_folder /tmp/oxford-radar-robotcar-dataset
 
-# Will will prompt for a confirmation like below. Simply confirm to download data
+# Will will prompt for a confirmation as shown below. Simply confirm to download data
 # Finding Matching Files...
 # ========================================================================================================================================================================================================================================
 # Match No : Dataset                                          - Sensor                                             - Download Size     - Download Link
@@ -112,7 +112,7 @@ The dataset follows the same route and uses the same RobotCar platform as the or
 
 Citation
 --------------
-If you use this dataset in your research, please cite both the following papers:
+If you use this dataset in your research, please cite both of the following papers:
 
 ```bibtex
 @misc{
