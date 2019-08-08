@@ -56,17 +56,17 @@ python -m radar_robotcar_dataset_sdk.downloader.download --sample_dataset Small 
 # Download Radar and GPS/INS Data from two Datasets
 python -m radar_robotcar_dataset_sdk.downloader.download \
 	--datasets="2019-01-16-11-53-11-radar-oxford-10k,2019-01-16-13-09-37-radar-oxford-10k" \
-	--sensors="Navtech CTS350x Radar,NovAtel GPS / INS" \
+	--sensors="Navtech CTS350-X Radar,NovAtel GPS / INS" \
 	--download_folder /tmp/oxford-radar-robotcar-dataset
 
 # Will will prompt for a confirmation as shown below. Simply confirm to download data
 # Finding Matching Files...
 # ========================================================================================================================================================================================================================================
 # Match No : Dataset                                          - Sensor                                             - Download Size     - Download Link
-#        1 : 2019-01-16-11-53-11-radar-oxford-10k             - Navtech CTS350x Radar                              - 3.3 GB            - https://drive.google.com/file/d/1bQviDEkU20uq-xGeHrciaA5YeOr1-uyW
+#        1 : 2019-01-16-11-53-11-radar-oxford-10k             - Navtech CTS350-X Radar                             - 3.3 GB            - https://drive.google.com/file/d/1bQviDEkU20uq-xGeHrciaA5YeOr1-uyW
 #        2 : 2019-01-16-11-53-11-radar-oxford-10k             - NovAtel GPS / INS                                  - 16.4 MB           - https://drive.google.com/file/d/1b1wNBtSumoqUeYxAMCwcjEKHPOZpn36h
 # 
-#        3 : 2019-01-16-13-09-37-radar-oxford-10k             - Navtech CTS350x Radar                              - 3.3 GB            - https://drive.google.com/file/d/17IP4JagskFe2q_yIky-wgBjUUYYtMXxl
+#        3 : 2019-01-16-13-09-37-radar-oxford-10k             - Navtech CTS350-X Radar                             - 3.3 GB            - https://drive.google.com/file/d/17IP4JagskFe2q_yIky-wgBjUUYYtMXxl
 #        4 : 2019-01-16-13-09-37-radar-oxford-10k             - NovAtel GPS / INS                                  - 16.5 MB           - https://drive.google.com/file/d/1vVlNaCqY2jwohm8k_oCOWyQKyB1jR8cq
 # 
 # Number of files to download: 4
