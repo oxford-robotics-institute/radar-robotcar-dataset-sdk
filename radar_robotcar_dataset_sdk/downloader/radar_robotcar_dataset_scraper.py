@@ -56,6 +56,11 @@ class DatasetScraper:
                 sensor_info['Download'] = "Available Soon"
             else:
                 sensor_info['Download'] = download['href']
+            if "NovAtel GPS / INS" == sensor_info_lines[0].strip():
+                gps_size, gps_ext = sensor_info['GPS Size'].split(' ')[:2]
+                ins_size, ins_ext = sensor_info['INS Size'].split(' ')[:2]
+                assert gps_ext.strip() == ins_ext.strip()
+                sensor_info['Size'] = "{:.2f} {}".format(float(gps_size) + float(gps_size), gps_ext)
             dataset_info[sensor_info_lines[0].strip()] = deepcopy(sensor_info)
 
         return dataset_info
