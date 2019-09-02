@@ -39,7 +39,8 @@ python -m radar_robotcar_dataset_sdk.downloader.download --help
 
 # Which will print
 #  --datasets: Comma separated list of datasets to download (None is all)
-#  --download_folder: Download folder (otherwise just list matching downloads)
+#  --download_folder: Download folder (otherwise just list matching downloads). Please note on Linux this folder 
+#       cannot be in `/tmp` as some distros cannot run executables there.
 #  --sample_dataset: Sample dataset to download (one of `Tiny|Small|Medium|Large`).
 #    If provided --datasets and --sensors are ignored.
 #  --sensors: Comma separated list of sensors to download (None is all)
@@ -51,13 +52,13 @@ python -m radar_robotcar_dataset_sdk.downloader.download
 
 # Download the `Small` sample dataset
 python -m radar_robotcar_dataset_sdk.downloader.download --sample_dataset Small \
-	--download_folder /tmp/oxford-radar-robotcar-dataset
+	--download_folder /data/oxford-radar-robotcar-dataset
 
 # Download Radar and GPS/INS Data from two Datasets
 python -m radar_robotcar_dataset_sdk.downloader.download \
 	--datasets="2019-01-16-11-53-11-radar-oxford-10k,2019-01-16-13-09-37-radar-oxford-10k" \
 	--sensors="Navtech CTS350-X Radar,NovAtel GPS / INS" \
-	--download_folder /tmp/oxford-radar-robotcar-dataset
+	--download_folder /data/oxford-radar-robotcar-dataset
 
 # Will will prompt for a confirmation as shown below. Simply confirm to download data
 # Finding Matching Files...
@@ -73,14 +74,14 @@ python -m radar_robotcar_dataset_sdk.downloader.download \
 # Total download size (before unpacking): 6.63 GB
 # 
 # Are you sure you want to download the above files and unpack to:
-# /tmp/oxford-radar-robotcar-dataset
+# /data/oxford-radar-robotcar-dataset
 # 
 # Do you wish to continue? [y/N]:
 # 
 
 # Download ALL datasets and ALL sensors (do not specify datasets or sensors)
 python -m radar_robotcar_dataset_sdk.downloader.download \
-	--download_folder /tmp/oxford-radar-robotcar-dataset
+	--download_folder /data/oxford-radar-robotcar-dataset
 	
 ```
 ### Google Account Verification

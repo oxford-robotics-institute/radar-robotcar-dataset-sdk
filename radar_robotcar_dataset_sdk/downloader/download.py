@@ -24,7 +24,9 @@ from radar_robotcar_dataset_sdk.downloader.gdrive_handler import GDriveHandler
 
 FLAGS = flags.FLAGS
 
-flags.DEFINE_string("download_folder", None, "Download folder (otherwise just list matching downloads)")
+flags.DEFINE_string("download_folder", None, "Download folder (otherwise just list matching downloads). "
+                                             "Please note on Linux this folder cannot be in `/tmp` as some distros "
+                                             "cannot run executables there.")
 flags.DEFINE_string("sensors", None, "Comma separated list of sensors to download (None is all)")
 flags.DEFINE_string("datasets", None, "Comma separated list of datasets to download (None is all)")
 flags.DEFINE_string("sample_dataset", None, "Sample dataset to download (one of `Tiny|Small|Medium|Large`). "
@@ -163,7 +165,7 @@ def main(unused_args):
             return
 
         print("")
-        gdrive_handler = GDriveHandler()
+        gdrive_handler = GDriveHandler(FLAGS.download_folder)
         for di, downld in enumerate(downloads):
             print(
                 f"Downloading {di:4} / {len(downloads):4} : {downld[0]:48} - {downld[1]:25} - {downld[2]:17} - "
@@ -171,7 +173,7 @@ def main(unused_args):
             if "available soon" in downld[3].lower():
                 print(f"Sorry this download isn't available yet, but it will be soon. Skipping...")
             else:
-                downloaded_zip_file_path = gdrive_handler.download(os.path.basename(downld[3]), FLAGS.download_folder)
+                downloaded_zip_file_path = gdrive_handler.download(os.path.basename(downld[3]))
 
                 print(f"Extracting into: {FLAGS.download_folder} ...")
                 downloaded_zip_file = zipfile.ZipFile(downloaded_zip_file_path, allowZip64=True)

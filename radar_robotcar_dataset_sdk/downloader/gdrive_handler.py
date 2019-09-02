@@ -18,7 +18,6 @@ import os.path
 import platform
 import subprocess
 from google_drive_downloader import GoogleDriveDownloader as gdd
-import tempfile
 import sys
 import pexpect
 
@@ -57,29 +56,22 @@ gdrive_binary_list_raw = """Id                                  Name            
 1GXmTKyz4nXCSnX15CjmM7d3LzMBmBzdV   gdrive-freebsd-386       bin    4.2 MB   2018-11-01 19:32:49
 1zOWRZAnIHgaSXQpiqdirRc8q4gU8mdeg   gdrive-dragonfly-x64     bin    4.8 MB   2018-11-01 19:32:47"""
 gdrive_binary_list = [l.split() for l in gdrive_binary_list_raw.splitlines()[1:]]
+default_gdrive_dir = os.path.expanduser(os.path.join('~', '.radar_robotcar_dataset_downloader'))
 
 
 class GDriveHandler:
-    def __init__(self):
-        self.bin = check_gdrive_exists_or_download(True)
+    def __init__(self, download_dir):
+        self.download_dir = download_dir
+        self.bin = check_gdrive_exists_or_download(self.download_dir, True)
 
-    def info(self, id):
-        args = [self.bin, 'info', id]
-        resp = subprocess.check_output(args)
-        return resp
-
-    def download(self, id, destination, timeout=0):
-        args = [self.bin, 'download', "--timeout", str(timeout), "--force", "--path", destination, id]
+    def download(self, id, timeout=0):
+        args = [self.bin, 'download', "--timeout", str(timeout), "--force", "--path", self.download_dir, id]
         res = subprocess.check_output(args)
         output_file = res.decode().splitlines()[0].split()[-1]
         return output_file
 
-    def upload(self, filepath, folder_id, timeout=0):
-        args = [self.bin, 'upload', "--parent", folder_id, "--timeout", str(timeout), filepath]
-        subprocess.check_call(args)
 
-
-def check_gdrive_exists_or_download(check_authorised=True, download_gdrive_dir=tempfile.gettempdir()):
+def check_gdrive_exists_or_download(download_gdrive_dir, check_authorised=True):
     # This is not very robust but covers the main systems
 
     if (not FLAGS.is_parsed()) or (FLAGS.gdrive_binary_name is None):
@@ -95,6 +87,11 @@ def check_gdrive_exists_or_download(check_authorised=True, download_gdrive_dir=t
     else:
         gdrive_binary_name_search = FLAGS.gdrive_binary_name
 
+    if system == "linux":
+        if download_gdrive_dir[:4] == "/tmp":
+            raise RuntimeError(f'Some linux distros cannot run executables in `/tmp`. '
+                               f'Please change you download directory from: {download_gdrive_dir}')
+
     try:
         candidate_binaries = [g for g in gdrive_binary_list if g[1] == gdrive_binary_name_search]
         gdrive_binary = candidate_binaries[0]
@@ -105,12 +102,10 @@ def check_gdrive_exists_or_download(check_authorised=True, download_gdrive_dir=t
         print(gdrive_binary_list_raw)
         raise LookupError
 
-    paths = os.environ['PATH'].split(':') + ['/usr/local/bin', download_gdrive_dir, '.']
-    gdrive_binary_paths = [f'{path}/{gdrive_binary_name}' for path in paths]
-    found = [os.path.isfile(gp) for gp in gdrive_binary_paths]
-    if any(found):
-        gdrive_binary_path = [p for p, f in zip(gdrive_binary_paths, found) if f][0]
-    else:
+    # Try and find existing gdrive exectutable first
+    gdrive_binary_path = f'{download_gdrive_dir}/{gdrive_binary_name}'
+    found = os.path.isfile(gdrive_binary_path)
+    if not found:
         gdrive_binary_path = f"/{download_gdrive_dir}/{gdrive_binary[1]}"
         gdd.download_file_from_google_drive(file_id=gdrive_binary[0],
                                             dest_path=gdrive_binary_path)
@@ -130,7 +125,7 @@ def verify_gdrive_authorised(gdrive_binary_path):
     returns = [verification_code, no_verification_code, pexpect.EOF]
     index = child.expect(returns)
     if returns[index] == pexpect.EOF:
-        raise RuntimeError(f'Unexpected GDrive banch')
+        raise RuntimeError(f'Unexpected GDrive branch')
     elif returns[index] == no_verification_code:
         return
     else:
@@ -140,10 +135,11 @@ def verify_gdrive_authorised(gdrive_binary_path):
         returns = [no_verification_code, pexpect.EOF]
         index = child.expect(returns)
         if returns[index] == pexpect.EOF:
-            raise RuntimeError(f'Unexpected GDrive banch')
+            raise RuntimeError(f'Unexpected GDrive branch')
         elif returns[index] == no_verification_code:
             print("\nGDrive Authorised\n")
             return
+
 
 def main(unused_args):
     check_gdrive_exists_or_download(True)
