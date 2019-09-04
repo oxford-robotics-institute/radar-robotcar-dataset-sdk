@@ -111,7 +111,7 @@ Details
 -----------
 
 Further details about the Oxford Radar RobotCar Dataset Dataset and associated projects can be found here: 
-<br> [[Website]](https://ori.ox.ac.uk/datasets/radar-robotcar-dataset)
+<br> [[Website]](https://ori.ox.ac.uk/datasets/radar-robotcar-dataset) &nbsp;&nbsp;[[Paper]](https://arxiv.org/pdf/1909.01300)
 
 The dataset follows the same route and uses the same RobotCar platform as the original Oxford RobotCar Dataset, details of which can be found at:
 <br> [[Website]](https://robotcar-dataset.robots.ox.ac.uk) &nbsp;&nbsp;[[Paper]](https://robotcar-dataset.robots.ox.ac.uk/images/robotcar_ijrr.pdf) &nbsp;&nbsp;[[SDK]](https://github.com/ori-drs/robotcar-dataset-sdk)
