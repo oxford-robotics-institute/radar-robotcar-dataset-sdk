@@ -122,12 +122,13 @@ Citation
 If you use this dataset in your research, please cite both of the following papers:
 
 ```bibtex
-@misc{
-  OxfordRadarRobotCarDatasetWeb,
-  author = {Barnes, Dan and Gadd, Matthew and Murcutt, Paul and Newman, Paul and Posner, Ingmar},
-  title = {{Oxford Radar RobotCar Dataset}},
-  howpublished = {\url{http://ori.ox.ac.uk/datasets/radar-robotcar-dataset}},
-  year = {2019},
+@article{RadarRobotCarDatasetArXiv,
+  author = {Dan Barnes and Matthew Gadd and Paul Murcutt and Paul Newman and Ingmar Posner},
+  title = {The Oxford Radar RobotCar Dataset: A Radar Extension to the Oxford RobotCar Dataset},
+  journal = {arXiv preprint arXiv: 1909.01300},
+  url = {https://arxiv.org/pdf/1909.01300},
+  pdf = {https://arxiv.org/pdf/1909.01300.pdf},
+  year = {2019}
 }
 ```
 ```bibtex
