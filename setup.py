@@ -12,7 +12,7 @@
 #
 ###############################################################################
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 import os
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -27,11 +27,12 @@ setup(name='radar-robotcar-dataset-sdk',
       author='Dan Barnes',
       author_email='dbarnes@robots.ox.ac.uk',
       license='Attribution-NonCommercial-ShareAlike 4.0 International',
-      packages=find_packages(exclude=['docs']),
+      packages=find_namespace_packages(include=['radar_robotcar_dataset_sdk*']),
       install_requires=required,
       project_urls={
           'Oxford Radar RobotCar Dataset': 'https://ori.ox.ac.uk/datasets/radar-robotcar-dataset',
           'Oxford Radar RobotCar Dataset SDK Source': 'http://github.com/dbarnes/radar-robotcar-dataset-sdk',
           'Oxford Robotics Institute': 'https://ori.ox.ac.uk',
       },
+      zip_safe=False,
       )
