@@ -6,6 +6,12 @@ This repo provides additional python helpers for the Oxford Radar RobotCar Datas
 
 Matlab and Python parsers for all the data are included in the original [**Oxford RobotCar Dataset SDK**](https://github.com/ori-mrg/robotcar-dataset-sdk)
 
+
+** Please Read **
+--------------
+The existing downloader relies on an external binary for downloading the dataset which is currently unable to authorise users as described on this [issue](https://github.com/dbarnes/radar-robotcar-dataset-sdk/issues/3). We have written our own downloader but we must wait to be verified by Google for this to be used externally. The meantime please download files manually from the dataset website.
+
+
 Modules
 -----------
 All modules are contained in the base module `radar_robotcar_dataset_sdk`
