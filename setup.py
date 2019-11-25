@@ -28,6 +28,7 @@ setup(name='radar-robotcar-dataset-sdk',
       author_email='dbarnes@robots.ox.ac.uk',
       license='Attribution-NonCommercial-ShareAlike 4.0 International',
       packages=find_namespace_packages(include=['radar_robotcar_dataset_sdk*']),
+      package_data={'radar_robotcar_dataset_sdk': ['downloader/client_secrets.json']},
       install_requires=required,
       project_urls={
           'Oxford Radar RobotCar Dataset': 'https://ori.ox.ac.uk/datasets/radar-robotcar-dataset',
