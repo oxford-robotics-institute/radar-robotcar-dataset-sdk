@@ -9,8 +9,8 @@ Matlab and Python parsers for all the data are included in the original [**Oxfor
 
 ** Please Read **
 --------------
-The existing downloader relies on an external binary for downloading the dataset which is currently unable to authorise users as described on this [issue](https://github.com/dbarnes/radar-robotcar-dataset-sdk/issues/3). We have written our own downloader but we must wait to be verified by Google for this to be used externally. The meantime please download files manually from the dataset website.
-
+Although the automatic downloader script and other code has been tested extensively we accept no liability for use of the code.
+If you have any concern please review the source code before using.
 
 Modules
 -----------
@@ -92,26 +92,38 @@ python -m radar_robotcar_dataset_sdk.downloader.download \
 ```
 ### Google Account Verification
 
-We provide authorised downloads via Google Drive for each registered user. To automatically handle this we use a forked version of GDrive with Team Drive support which can be found at: `https://github.com/petrpulc/gdrive`. This binary is automatically downloaded and run as part of the download script. To use this binary you will need to give permission for the binary to use your credentials. When prompted simply follow the instructions (as shown below) by:
+We provide authorised downloads via Google Drive for each registered user.
+To automatically handle this we use rclone which can be found at: `https://github.com/rclone/rclone`.
+This binary is automatically downloaded and run as part of the download script.
+To use this binary you will need to give permission for the binary to use your credentials.
+When prompted simply follow the instructions (as shown below) by:
 
-- Going to the url in your browser
+- Going to the url in your browser (opened automatically locally in a browser if run locally)
 - Selecting the Google Account which has been given download access
 - Pasting the verification code back into the prompt
 
-```
-Using GDrive binary: /var/folders/yv/c2hy439111b_snjnhtdls87m0000gn/T/gdrive-osx-386
 
-Authentication needed
-Go to the following url in your browser:
-https://accounts.google.com/o/oauth2/auth?...
-
-Enter verification code:
-<ENTER_CODE_HERE>
-
-GDrive Authorised
 ```
 
-Please note the automated download using GDrive is **completely optional** and you are free to download the files manually through your browser or devise some other means of downloading the files.
+====================================================================================================
+rclone config not authorised for downloads: /tmp/radar_robotcar_dataset_test_download/rclone_rrcd.conf
+Authorisation needed. Please follow the rclone instructions to generate a read only Google Drive token
+Please use the Google Drive account you signed up with and were authorised for at: https://ori.ox.ac.uk/datasets/radar-robotcar-dataset/registration
+====================================================================================================
+
+Use auto config?
+ * Say Y if not sure
+ * Say N if you are working on a remote or headless machine
+Auto confirm is set: answering No, override by setting config parameter config_is_local=true
+If your browser doesn't open automatically go to the following link: https://accounts.google.com/o/oauth2/auth?...
+Log in and authorize rclone for access
+Enter verification code> <ENTER_CODE_HERE>
+
+rclone authorised sucessfully
+
+```
+
+Please note the automated download using rclone is **completely optional** and you are free to download the files manually through your browser or devise some other means of downloading the files.
 
 Details
 -----------
