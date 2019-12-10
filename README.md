@@ -12,12 +12,16 @@ Matlab and Python parsers for all the data are included in the original [**Oxfor
 Although the automatic downloader script and other code has been tested extensively we accept no liability for use of the code.
 If you have any concern please review the source code before using.
 
+Using [**rclone**](https://github.com/rclone/rclone) (the binary used to download the dataset files) we target download files by filename rather than id.
+If you have other files shared with you in Google Drive that match our dataset filenames you may encounter unintended errors.
+However as we use long filenames such as `2019-01-15-14-24-38-radar-oxford-10k_Bumblebee_XB3_Visual_Odometry` we believe this is unliekely and additionally we use read only permission for additional safety.
+
+
 Modules
 -----------
 All modules are contained in the base module `radar_robotcar_dataset_sdk`
 
 `downloader`: Downloader script to automate and simplify downloading the Oxford Radar RobotCar Dataset
-
 
 
 Obtaining Data
@@ -27,12 +31,14 @@ To obtain the data, please first register on the [dataset website](http://ori.ox
 Downloads are separated into individual zip files for each sensor, for each traversal. It is recommended that you extract all tar files to the same directory - this will leave all the data in a sensible heirarchical directory structure. 
 
 
+Please note the automated download using [**rclone**](https://github.com/rclone/rclone) is **completely optional** and you are free to download the files manually through your browser at [ori.ox.ac.uk/datasets/radar-robotcar-dataset/datasets](https://ori.ox.ac.uk/datasets/radar-robotcar-dataset/datasets).
+
 Installation 
 --------------
 
 ```bash
 # Either clone the package manually and add it to your PYTHONPATH or install it using:
-pip install git+ssh://git@github.com/dbarnes/radar-robotcar-dataset-sdk.git
+pip install git+https://git@github.com/dbarnes/radar-robotcar-dataset-sdk.git
 ```
 
 Data Download
@@ -123,7 +129,6 @@ rclone authorised sucessfully
 
 ```
 
-Please note the automated download using rclone is **completely optional** and you are free to download the files manually through your browser or devise some other means of downloading the files.
 
 Details
 -----------
