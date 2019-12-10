@@ -100,6 +100,7 @@ def _initialise_dir_with_rclone(install_dir, create_dir_if_needed=True):
     lines[1:] = [l.replace('/usr/bin', install_dir).replace('/usr/local/bin', install_dir) for l in lines[1:]]
     lines[1:] = [l.replace('/usr/local/share', os.path.join(install_dir, 'share')) for l in lines[1:]]
     lines[1:] = [l.replace('/usr/local/man', os.path.join(install_dir, 'man')) for l in lines[1:]]
+    lines[1:] = [l.replace('root:wheel', '`whoami`:').replace('root:root', '`whoami`:') for l in lines[1:]]
     # Use existing rclone if exists
     lines.insert(1, "PATH={}:${{PATH}}".format(install_dir))
     patched_install_script = "\n".join(lines) + "\n"
