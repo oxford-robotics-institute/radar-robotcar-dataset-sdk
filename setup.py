@@ -35,4 +35,7 @@ setup(name='radar-robotcar-dataset-sdk',
           'Oxford Robotics Institute': 'https://ori.ox.ac.uk',
       },
       zip_safe=False,
+      data_files=[('radar_robotcar_dataset_sdk/downloader',
+                   ['radar_robotcar_dataset_sdk/downloader/rclone_rrcd_unauthorised.conf'])],
+      include_package_data=True,
       )
