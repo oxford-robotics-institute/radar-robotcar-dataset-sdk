@@ -15,7 +15,6 @@
 from __future__ import division, print_function, absolute_import
 import os.path
 import subprocess
-import requests
 import os
 import shutil
 
@@ -23,7 +22,8 @@ _ls = "=" * 100  # Logging separator
 _current_dir = os.path.expanduser(os.path.abspath(os.path.dirname(__file__)))
 _rrcd_registration_url = "https://ori.ox.ac.uk/datasets/radar-robotcar-dataset/registration"
 
-_rclone_install_script = "https://rclone.org/install.sh"
+_rclone_version = "v1.50.1"
+_rclone_install_script_path = os.path.join(_current_dir, 'rclone', "install.sh")
 _rclone_patched_install_script_name = "patched_rclone_install.sh"
 _rclone_binary_name = "rclone"
 _rclone_rrcd_conf_unauthorised_name = "rclone_rrcd_unauthorised.conf"
@@ -86,33 +86,12 @@ def _initialise_dir_with_rclone(install_dir, create_dir_if_needed=True):
         else:
             raise NotADirectoryError('install_dir does not exist and create_dir_if_needed is False: '
                                      '{}'.format(install_dir))
-    ##########################################################################################
-    # Download install script
-    ##########################################################################################
-    r = requests.get(_rclone_install_script)
-    if not r.status_code == requests.codes.OK:
-        raise requests.exceptions.HTTPError('Failed to fetch rclone install script: {}'.format(_rclone_install_script))
 
     ##########################################################################################
-    # Patch install script to install all files to the `install_dir`
-    ##########################################################################################
-    lines = r.text.split('\n')
-    lines[1:] = [l.replace('/usr/bin', install_dir).replace('/usr/local/bin', install_dir) for l in lines[1:]]
-    lines[1:] = [l.replace('/usr/local/share', os.path.join(install_dir, 'share')) for l in lines[1:]]
-    lines[1:] = [l.replace('/usr/local/man', os.path.join(install_dir, 'man')) for l in lines[1:]]
-    lines[1:] = [l.replace('root:wheel', '`whoami`:').replace('root:root', '`whoami`:') for l in lines[1:]]
-    # Use existing rclone if exists
-    lines.insert(1, "PATH={}:${{PATH}}".format(install_dir))
-    patched_install_script = "\n".join(lines) + "\n"
-
-    output_patched_install_script_path = os.path.join(install_dir, _rclone_patched_install_script_name)
-    open(output_patched_install_script_path, 'w').write(patched_install_script)
-
-    ##########################################################################################
-    # Run patched install script
+    # Run modified rclone install script with download folder and rclone version
     ##########################################################################################
     print("{}\nInitialising rclone to: {}\n{}".format(_ls, install_dir, _ls))
-    return_code = subprocess.call(['bash', output_patched_install_script_path],
+    return_code = subprocess.call(['bash', _rclone_install_script_path, install_dir, _rclone_version],
                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if return_code == 0:
         print('rclone install script: exited without problems')
@@ -122,7 +101,8 @@ def _initialise_dir_with_rclone(install_dir, create_dir_if_needed=True):
     elif return_code == 2:
         raise RuntimeError('rclone install script: OS not supported by this script')
     elif return_code == 3:
-        print('rclone install script: installed version of rclone is up to date')
+        print('rclone install script: installed version of rclone is already at requested version: '
+              '{}'.format(_rclone_version))
     elif return_code == 4:
         raise RuntimeError('rclone install script: supported unzip tools are not available')
     else:
@@ -159,5 +139,5 @@ def _initialise_dir_with_rclone(install_dir, create_dir_if_needed=True):
 
 
 if __name__ == '__main__':
-    gdrive = GDriveHandler(download_dir='/tmp/radar_robotcar_dataset_test_download')
+    gdrive = GDriveHandler(download_dir='/tmp/radar_robotcar_dataset_test_download3')
     gdrive.download_filename("2019-01-15-14-24-38-radar-oxford-10k_Bumblebee_XB3_Visual_Odometry")
