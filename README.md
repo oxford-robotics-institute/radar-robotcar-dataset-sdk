@@ -10,11 +10,11 @@ Matlab and Python parsers for all the data are included in the original [**Oxfor
 ** Please Read **
 --------------
 Although the automatic downloader script and other code has been tested extensively we accept no liability for use of the code.
-If you have any concern please review the source code before using.
+If you have any concerns please review the source code before using.
 
 Using [**rclone**](https://github.com/rclone/rclone) (the binary used to download the dataset files) we target download files by filename rather than id.
 If you have other files shared with you in Google Drive that match our dataset filenames you may encounter unintended errors.
-However as we use long filenames such as `2019-01-15-14-24-38-radar-oxford-10k_Bumblebee_XB3_Visual_Odometry` we believe this is unliekely and additionally we use read only permission for additional safety.
+However as we use long filenames such as `2019-01-15-14-24-38-radar-oxford-10k_Bumblebee_XB3_Visual_Odometry` we believe this is unlikely and additionally, we use read only permission for additional safety.
 
 
 Modules
@@ -104,7 +104,7 @@ This binary is automatically downloaded and run as part of the download script.
 To use this binary you will need to give permission for the binary to use your credentials.
 When prompted simply follow the instructions (as shown below) by:
 
-- Going to the url in your browser (opened automatically locally in a browser if run locally)
+- Going to the url in your browser (opened automatically in a browser if run locally)
 - Selecting the Google Account which has been given download access
 - Pasting the verification code back into the prompt
 
