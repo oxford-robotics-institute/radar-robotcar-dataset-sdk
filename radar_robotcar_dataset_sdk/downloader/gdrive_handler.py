@@ -13,138 +13,131 @@
 ###############################################################################
 
 from __future__ import division, print_function, absolute_import
-from absl import app, logging, flags
 import os.path
-import platform
 import subprocess
-from google_drive_downloader import GoogleDriveDownloader as gdd
-import sys
-import pexpect
+import os
+import shutil
 
-FLAGS = flags.FLAGS
-flags.DEFINE_string("gdrive_binary_name", None, "GDrive binary name")
+_ls = "=" * 100  # Logging separator
+_current_dir = os.path.expanduser(os.path.abspath(os.path.dirname(__file__)))
+_rrcd_registration_url = "https://ori.ox.ac.uk/datasets/radar-robotcar-dataset/registration"
 
-# We use this forked gdrive which has Team Drive support
-# https://github.com/petrpulc/gdrive
-# Generate the below list with any gdrive instance with the command:
-# gdrive list  --query " '12GSQhLLdKDdKzq_a-7WOrip5HnFmm1v9' in parents"
-gdrive_binary_list_raw = """Id                                  Name                     Type   Size     Created
-1iIjBty1FKxdGvyc4GATngwgbzQdPYz2p   gdrive-linux-x64         bin    4.8 MB   2018-11-01 19:33:47
-1gXMutwGQ-HJ0zKwOKlMqEKt3197UhYn8   gdrive-linux-386         bin    4.2 MB   2018-11-01 19:32:59
-1LkAchi-D9KzvRcGWVcmSJl6c8PG9QWzS   gdrive-windows-x64.exe   bin    4.7 MB   2018-11-01 19:34:29
-1qBuNl46cSqYsbNBgNYAgH74NFhD11epX   gdrive-windows-386.exe   bin    4.2 MB   2018-11-01 19:34:26
-1pU9HVjiNvxaXyRtaX7hltyjyYF4glonT   gdrive-solaris-x64       bin    4.7 MB   2018-11-01 19:34:24
-13OZeLVUQJBC8WdMEtsKPR8eVVU1ZZ4AB   gdrive-plan9-x64         bin    4.5 MB   2018-11-01 19:34:22
-1smW7u9JANDGAZxQZjgWOj0Qr1Kj3h0P2   gdrive-plan9-386         bin    4.0 MB   2018-11-01 19:34:20
-1GL18Ety5Le8IpNwRKO1iZg1YWV_cCWUN   gdrive-osx-x64           bin    5.2 MB   2018-11-01 19:34:17
-1dGh5g88D2jq-KeVOMcbAYpJkd20mUBDi   gdrive-osx-386           bin    4.7 MB   2018-11-01 19:34:04
-1sLp4DRDKkyaKoUcz03UGjXR1zYdJb4-N   gdrive-openbsd-x64       bin    4.8 MB   2018-11-01 19:34:01
-1wlzUqpzsE9XS4rK2EVJ1C2WiWxL79QgM   gdrive-openbsd-arm       bin    4.4 MB   2018-11-01 19:33:59
-19CNffIDUygHWQWw6hP7tLECeqzfmaCwU   gdrive-openbsd-386       bin    4.2 MB   2018-11-01 19:33:57
-1xleqVF8HlkLp_el8-CS30g23Pta-IyUj   gdrive-netbsd-x64        bin    4.8 MB   2018-11-01 19:33:54
-14WbEoaHiPDNFi7dgecav6XrFAYZAYBME   gdrive-netbsd-arm        bin    4.4 MB   2018-11-01 19:33:52
-1Ev7sgDmYZoZb_krBd95fej_vaqYAIqtK   gdrive-netbsd-386        bin    4.2 MB   2018-11-01 19:33:49
-1SMrO7Kh3BjetpL2nBykgtjedVICZxJtJ   gdrive-linux-rpi         bin    4.4 MB   2018-11-01 19:33:45
-1Ul1NBy7S2fOEomF0pLY1RmmcLeYwsWFA   gdrive-linux-ppc64le     bin    5.0 MB   2018-11-01 19:33:43
-1kafdBT0nZllg2joivg_VQItTLD3mH_Cg   gdrive-linux-ppc64       bin    5.0 MB   2018-11-01 19:33:39
-1xazXLlduU1QSJYMU8Ch_WfIbkmrHGXct   gdrive-linux-mips64le    bin    5.7 MB   2018-11-01 19:33:37
-1sFHrFwVhR6su1iR39j5LR52loA9nA228   gdrive-linux-mips64      bin    5.7 MB   2018-11-01 19:33:34
-1N-26SYJ5IQ8hXbc_DTJ-tYMaoOpvmtKl   gdrive-linux-arm64       bin    4.9 MB   2018-11-01 19:33:31
-1enssEMj7FXEZUkbu8AVabOeKRmWt99wa   gdrive-linux-arm         bin    4.4 MB   2018-11-01 19:33:29
-1klUCs5B6uMJ-WoZFjq6S0kphM1eRAU0F   gdrive-freebsd-x64       bin    4.8 MB   2018-11-01 19:32:56
-1foJs2QP6Tv7EYyqvd5gnDbllxuwPn4aF   gdrive-freebsd-arm       bin    4.4 MB   2018-11-01 19:32:51
-1GXmTKyz4nXCSnX15CjmM7d3LzMBmBzdV   gdrive-freebsd-386       bin    4.2 MB   2018-11-01 19:32:49
-1zOWRZAnIHgaSXQpiqdirRc8q4gU8mdeg   gdrive-dragonfly-x64     bin    4.8 MB   2018-11-01 19:32:47"""
-gdrive_binary_list = [l.split() for l in gdrive_binary_list_raw.splitlines()[1:]]
-default_gdrive_dir = os.path.expanduser(os.path.join('~', '.radar_robotcar_dataset_downloader'))
+_rclone_version = "v1.50.1"
+_rclone_install_script_path = os.path.join(_current_dir, 'rclone', "install.sh")
+_rclone_patched_install_script_name = "patched_rclone_install.sh"
+_rclone_binary_name = "rclone"
+_rclone_rrcd_conf_unauthorised_name = "rclone_rrcd_unauthorised.conf"
+_rclone_rrcd_conf_authorised_name = "rclone_rrcd.conf"
+_rclone_rrcd_conf_drive_path = "rrcd_drive:"
+_rclone_rrcd_conf_unauthorised_path = os.path.join(_current_dir, _rclone_rrcd_conf_unauthorised_name)
 
 
 class GDriveHandler:
     def __init__(self, download_dir):
         self.download_dir = download_dir
-        self.bin = check_gdrive_exists_or_download(self.download_dir, True)
+        self.bin, self.config = _initialise_dir_with_rclone(self.download_dir)
+        self.call_args = [self.bin, "--config", self.config, "--drive-shared-with-me"]
+        self.__authorise_if_needed()
 
-    def download(self, id, timeout=0):
-        args = [self.bin, 'download', "--timeout", str(timeout), "--force", "--path", self.download_dir, id]
-        res = subprocess.check_output(args)
-        output_file = res.decode().splitlines()[0].split()[-1]
-        return output_file
+    def download_filename(self, filename):
+        output_path_raw = os.path.join(self.download_dir, filename)
+        args = self.call_args + ["--progress", "copy", _rclone_rrcd_conf_drive_path + filename, self.download_dir]
+
+        subprocess.check_call(args)
+        if not os.path.isfile(output_path_raw):
+            raise RuntimeError('Unexpected error in downloading file to: {}'.format(output_path_raw))
+
+        output_path_zip = output_path_raw + ".zip"
+        shutil.move(output_path_raw, output_path_zip)
+        if not os.path.isfile(output_path_zip):
+            raise RuntimeError('Unexpected error in adding zip extension to file: {}'.format(output_path_raw))
+
+        return output_path_zip
+
+    def __is_authorised(self):
+        # We use the about call as a proxy for checking we are correctly authorised with Google Drive
+        # I cannot find a better alternative than this at present
+        args = self.call_args + ["about", _rclone_rrcd_conf_drive_path]
+        res = subprocess.call(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # No error if we are correctly authorised
+        return res == 0
+
+    def __authorise_if_needed(self):
+        if not self.__is_authorised():
+            print("\n{}\nrclone config not authorised for downloads: {}".format(_ls, self.config))
+            print("Authorisation needed. Please follow the rclone instructions to generate a read only Google Drive "
+                  "token\nPlease use the Google Drive account you signed up with and were authorised for at: {}\n{}\n"
+                  "".format(_rrcd_registration_url, _ls))
+            args = self.call_args + ["config", "reconnect", _rclone_rrcd_conf_drive_path, "--auto-confirm"]
+            res = subprocess.call(args)
+            if res != 0:
+                raise RuntimeError('Google Drive authentication failed: please run again')
+            else:
+                print("\nrclone authorised sucessfully")
 
 
-def check_gdrive_exists_or_download(download_gdrive_dir, check_authorised=True):
-    # This is not very robust but covers the main systems
+def _initialise_dir_with_rclone(install_dir, create_dir_if_needed=True):
+    ##########################################################################################
+    # Create directory if necessary
+    ##########################################################################################
+    if not os.path.isdir(install_dir):
+        if create_dir_if_needed:
+            os.makedirs(install_dir)
+        else:
+            raise NotADirectoryError('install_dir does not exist and create_dir_if_needed is False: '
+                                     '{}'.format(install_dir))
 
-    if (not FLAGS.is_parsed()) or (FLAGS.gdrive_binary_name is None):
-        system = platform.system().lower()
-        if system == "darwin":
-            system = "osx"
-        processor_string_lookup = {
-            "i386": "386",
-            'x86_64': "x64",
-        }
-        processor_str = processor_string_lookup[platform.processor()]
-        gdrive_binary_name_search = "-".join(["gdrive", system, processor_str])
+    ##########################################################################################
+    # Run modified rclone install script with download folder and rclone version
+    ##########################################################################################
+    print("{}\nInitialising rclone to: {}\n{}".format(_ls, install_dir, _ls))
+    return_code = subprocess.call(['bash', _rclone_install_script_path, install_dir, _rclone_version],
+                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if return_code == 0:
+        print('rclone install script: exited without problems')
+    elif return_code == 1:
+        raise RuntimeError(
+            'rclone install script: parameters not supported were used or some unexpected error occurred')
+    elif return_code == 2:
+        raise RuntimeError('rclone install script: OS not supported by this script')
+    elif return_code == 3:
+        print('rclone install script: installed version of rclone is already at requested version: '
+              '{}'.format(_rclone_version))
+    elif return_code == 4:
+        raise RuntimeError('rclone install script: supported unzip tools are not available')
     else:
-        gdrive_binary_name_search = FLAGS.gdrive_binary_name
+        raise RuntimeError('rclone install script: unexpected return code {}'.format(return_code))
 
-    if system == "linux":
-        if download_gdrive_dir[:4] == "/tmp":
-            raise RuntimeError(f'Some linux distros cannot run executables in `/tmp`. '
-                               f'Please change you download directory from: {download_gdrive_dir}')
+    ##########################################################################################
+    # Check the rclone binary is found as expected
+    ##########################################################################################
+    rclone_path = os.path.join(install_dir, _rclone_binary_name)
+    if not os.path.isfile(rclone_path):
+        raise FileNotFoundError('Unexpected error. rclone binary not found after running install script: '
+                                '{}'.format(rclone_path))
+    print("\n{}\nrclone binary at : {}\n{}".format(_ls, rclone_path, _ls))
 
-    try:
-        candidate_binaries = [g for g in gdrive_binary_list if g[1] == gdrive_binary_name_search]
-        gdrive_binary = candidate_binaries[0]
-        gdrive_binary_name = gdrive_binary[1]
-    except KeyError or IndexError:
-        print(f"Could not automatically determine the correct gdrive binary string for system: {platform.platform()}")
-        print(f"Please feed the correct Name of the binaries from below as flag --gdrive_binary_name")
-        print(gdrive_binary_list_raw)
-        raise LookupError
+    ##########################################################################################
+    # Copy template authorisation if needed
+    ##########################################################################################
+    rclone_authorised_config_path = os.path.join(install_dir, _rclone_rrcd_conf_authorised_name)
+    if not os.path.isfile(rclone_authorised_config_path):
+        # Need to copy template rclone config
+        if not os.path.isfile(_rclone_rrcd_conf_unauthorised_path):
+            raise FileNotFoundError('Unexpected error. Could not find template rclone configuration: '
+                                    '{}'.format(_rclone_rrcd_conf_unauthorised_path))
+        shutil.copyfile(_rclone_rrcd_conf_unauthorised_path, rclone_authorised_config_path)
 
-    # Try and find existing gdrive exectutable first
-    gdrive_binary_path = f'{download_gdrive_dir}/{gdrive_binary_name}'
-    found = os.path.isfile(gdrive_binary_path)
-    if not found:
-        gdrive_binary_path = f"/{download_gdrive_dir}/{gdrive_binary[1]}"
-        gdd.download_file_from_google_drive(file_id=gdrive_binary[0],
-                                            dest_path=gdrive_binary_path)
-        subprocess.check_output(["chmod", "+x", gdrive_binary_path])
+    # Double check that the copied config exists
+    if not os.path.isfile(rclone_authorised_config_path):
+        raise FileNotFoundError('Unexpected error. Could not find rclone configuration after copying: '
+                                '{}'.format(rclone_authorised_config_path))
 
-    print(f"Using GDrive binary: {gdrive_binary_path}")
-    sys.stdout.flush()
-    if check_authorised:
-        verify_gdrive_authorised(gdrive_binary_path)
-    return gdrive_binary_path
+    print("\n{}\nrclone config at: {}\n{}".format(_ls, rclone_authorised_config_path, _ls))
 
-
-def verify_gdrive_authorised(gdrive_binary_path):
-    verification_code = "Enter verification code:"
-    no_verification_code = "Max upload size:"
-    child = pexpect.spawn(gdrive_binary_path, ["about"])
-    returns = [verification_code, no_verification_code, pexpect.EOF]
-    index = child.expect(returns)
-    if returns[index] == pexpect.EOF:
-        raise RuntimeError(f'Unexpected GDrive branch')
-    elif returns[index] == no_verification_code:
-        return
-    else:
-        print("\n" + child.before.decode())
-        print(child.after.decode())
-        child.sendline(input())
-        returns = [no_verification_code, pexpect.EOF]
-        index = child.expect(returns)
-        if returns[index] == pexpect.EOF:
-            raise RuntimeError(f'Unexpected GDrive branch')
-        elif returns[index] == no_verification_code:
-            print("\nGDrive Authorised\n")
-            return
-
-
-def main(unused_args):
-    check_gdrive_exists_or_download(True)
-    gdrive = GDriveHandler()
+    return rclone_path, rclone_authorised_config_path
 
 
 if __name__ == '__main__':
-    app.run(main)
+    gdrive = GDriveHandler(download_dir='/tmp/radar_robotcar_dataset_test_download3')
+    gdrive.download_filename("2019-01-15-14-24-38-radar-oxford-10k_Bumblebee_XB3_Visual_Odometry")

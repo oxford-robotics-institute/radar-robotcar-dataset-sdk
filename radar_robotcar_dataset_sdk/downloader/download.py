@@ -91,6 +91,7 @@ def main(unused_args):
                 download_path = FLAGS.download_folder + \
                                 f"/oxford_radar_robotcar_dataset_sample_{FLAGS.sample_dataset.lower()}.zip"
                 gdd.download_file_from_google_drive(file_id, download_path, overwrite=True, unzip=True, showsize=True)
+                os.remove(download_path)
                 print(f"\nDownload completed into: {FLAGS.download_folder}\n")
             else:
                 print("--download_folder is missing. Returning.")
@@ -168,14 +169,17 @@ def main(unused_args):
         gdrive_handler = GDriveHandler(FLAGS.download_folder)
         for di, downld in enumerate(downloads):
             print(
-                f"Downloading {di:4} / {len(downloads):4} : {downld[0]:48} - {downld[1]:25} - {downld[2]:17} - "
-                f"{downld[3]:100}")
+                f"\nDownloading {di:4} / {len(downloads):4} : {downld[0]:48} - {downld[1]:25} - {downld[2]:17} - "
+                f"{downld[3]:100}\n")
             if "available soon" in downld[3].lower():
                 print(f"Sorry this download isn't available yet, but it will be soon. Skipping...")
             else:
-                downloaded_zip_file_path = gdrive_handler.download(os.path.basename(downld[3]))
+                # fileId = os.path.basename(downld[3])
+                # rclone doesn't support downloading via fileId so we generate the filename
+                filename = "_".join([downld[0], downld[1].replace(' ', '_').replace('/', '--')])
+                downloaded_zip_file_path = gdrive_handler.download_filename(filename)
 
-                print(f"Extracting into: {FLAGS.download_folder} ...")
+                print(f"\nExtracting into: {FLAGS.download_folder} ...")
                 downloaded_zip_file = zipfile.ZipFile(downloaded_zip_file_path, allowZip64=True)
                 downloaded_zip_file.extractall(FLAGS.download_folder)
                 print(f"Deleting Zip File {downloaded_zip_file_path} ...")
