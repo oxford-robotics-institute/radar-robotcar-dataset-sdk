@@ -20,7 +20,7 @@ import os
 from copy import deepcopy
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string("dataset_url", "http://ori.ox.ac.uk/datasets/radar-robotcar-dataset",
+flags.DEFINE_string("dataset_url", "https://oxford-robotics-institute.github.io/radar-robotcar-dataset",
                     "Oxford Radar RobotCar Dataset url")
 
 
