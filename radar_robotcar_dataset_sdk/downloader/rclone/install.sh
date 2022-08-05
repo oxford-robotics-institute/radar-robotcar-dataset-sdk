@@ -124,7 +124,7 @@ esac
 download_link="https://downloads.rclone.org/$INSTALL_VERSION/rclone-$INSTALL_VERSION-$OS-$OS_type.zip"
 rclone_zip="rclone-$INSTALL_VERSION-$OS-$OS_type.zip"
 
-curl -O $download_link
+wget $download_link
 unzip_dir="tmp_unzip_dir_for_rclone"
 # there should be an entry in this switch for each element of unzip_tools_list
 case $unzip_tool in
